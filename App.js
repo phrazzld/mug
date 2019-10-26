@@ -8,12 +8,17 @@ export default function App() {
 
   async function queryAgent(query) {
     try {
-      let url = `https://robopeterson-api.herokuapp.com/api/message?query=${query}`;
-      let res = await fetch(url, {
+      const url = 'https://robopeterson-api.herokuapp.com/api/message';
+      const res = await fetch(url, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({query: query}),
       });
-      let body = await res.text();
-      setMessage(body);
+      const response = await res.json();
+      const message = response.message;
+      setMessage(message);
     } catch (err) {
       console.error(err.message);
       setMessage(err.message);
