@@ -7,14 +7,15 @@ import {
   Alert,
   View,
 } from 'react-native';
-//import {getUniqueId} from 'react-native-device-info';
 import Constants from 'expo-constants';
 
 export default function App() {
-  const [message, setMessage] = useState();
+  const [userMessage, setUserMessage] = useState();
+  const [agentMessage, setAgentMessage] = useState();
 
   async function queryAgent(query) {
     try {
+      setUserMessage(query);
       const url = 'https://robopeterson-api.herokuapp.com/api/messages';
       const deviceId = Constants.installationId;
       const res = await fetch(url, {
@@ -26,31 +27,38 @@ export default function App() {
       });
       const response = await res.json();
       const message = response.message;
-      setMessage(message);
+      setAgentMessage(message);
     } catch (err) {
       console.error(err.message);
-      setMessage(err.message);
+      Alert.alert('Error', 'There was an error querying the agent.', [
+        {text: 'OK'},
+      ]);
+      setAgentMessage(err.message);
     }
   }
-
-  /*
-  if (message === 'Something meaningful should probably go here.') {
-    const query = 'Say something funny';
-    queryAgent(query);
-  }
-  */
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text>{message}</Text>
+        <View style={styles.userMessageContainer}>
+          <Text style={styles.userMessage}>{userMessage}</Text>
+        </View>
+        <View style={styles.agentMessageContainer}>
+          <Text style={styles.agentMessage}>{agentMessage}</Text>
+        </View>
       </View>
-      <TextInput
-        style={styles.input}
-        onSubmitEditing={event => {
-          queryAgent(event.nativeEvent.text);
-        }}
-      />
+      <View style={styles.form}>
+        <TextInput
+          style={styles.input}
+          ref={input => {
+            this.textInput = input;
+          }}
+          onSubmitEditing={event => {
+            queryAgent(event.nativeEvent.text);
+            this.textInput.clear();
+          }}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -62,9 +70,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  userMessageContainer: {
+    marginVertical: 20,
+    marginRight: 5,
+    marginLeft: 10,
+    padding: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    width: '80%',
+  },
+  agentMessageContainer: {
+    marginVertical: 20,
+    marginRight: 10,
+    marginLeft: 5,
+    padding: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    width: '80%',
+  },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    justifyContent: 'space-around',
+    width: '80%',
+  },
+  userMessage: {
+    textAlign: 'right',
+  },
+  agentMessage: {
+    textAlign: 'left',
+  },
+  form: {
+    justifyContent: 'center',
   },
 });
