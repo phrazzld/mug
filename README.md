@@ -1,7 +1,7 @@
 # RoboPeterson
 
-A cross-platform mobile application built with React Native for chatting with the RoboPeterson chatbot. Chatbot built with Dialogflow, API layer built with Node and MongoDB.
+Cross-platform mobile application for talking to chatbots. Built with React Native.
 
 ## License
 
-MIT
+[MIT](https://opensource.org/licenses/MIT)
