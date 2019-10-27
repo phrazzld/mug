@@ -1,13 +1,7 @@
 import React, {useState} from 'react';
-import {
-  TextInput,
-  StyleSheet,
-  Text,
-  ScrollView,
-  Alert,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView, StyleSheet, Alert, View} from 'react-native';
 import Constants from 'expo-constants';
+import {Text, Input, ThemeProvider, Header} from 'react-native-elements';
 
 export default function App() {
   const [userMessage, setUserMessage] = useState();
@@ -38,61 +32,67 @@ export default function App() {
   }
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.userMessageContainer}>
-          <Text style={styles.userMessage}>{userMessage}</Text>
-        </View>
-        <View style={styles.agentMessageContainer}>
-          <Text style={styles.agentMessage}>{agentMessage}</Text>
-        </View>
-      </View>
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          ref={input => {
-            this.textInput = input;
-          }}
-          onSubmitEditing={event => {
-            queryAgent(event.nativeEvent.text);
-            this.textInput.clear();
-          }}
+    <ThemeProvider>
+      <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+        <Header
+          centerComponent={{text: 'ROBOPETERSON', style: {color: 'white'}}}
         />
-      </View>
-    </ScrollView>
+        <View style={styles.messagesContainer}>
+          <View style={[styles.messageContainer, styles.userMessageContainer]}>
+            <Text style={[styles.message, styles.userMessage]}>
+              {userMessage}
+            </Text>
+          </View>
+          <View style={[styles.messageContainer, styles.agentMessageContainer]}>
+            <Text style={[styles.message, styles.agentMessage]}>
+              {agentMessage}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.form}>
+          <Input
+            style={styles.messageContainer}
+            placeholder="Send a message..."
+            ref={input => {
+              this.textInput = input;
+            }}
+            onSubmitEditing={event => {
+              queryAgent(event.nativeEvent.text);
+              this.textInput.clear();
+            }}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
+    //justifyContent: 'center',
     alignItems: 'center',
+    height: '100%',
+    width: '100%',
+  },
+  messagesContainer: {
+    width: '100%',
+    padding: 20,
+  },
+  messageContainer: {
+    marginVertical: 20,
+    padding: 5,
   },
   userMessageContainer: {
-    marginVertical: 20,
-    marginRight: 5,
-    marginLeft: 10,
-    padding: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: 'blue',
+    borderBottomWidth: 1,
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
     width: '80%',
   },
   agentMessageContainer: {
-    marginVertical: 20,
-    marginRight: 10,
-    marginLeft: 5,
-    padding: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    width: '80%',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    justifyContent: 'space-around',
+    borderColor: 'red',
+    borderBottomWidth: 1,
     width: '80%',
   },
   userMessage: {
@@ -101,7 +101,13 @@ const styles = StyleSheet.create({
   agentMessage: {
     textAlign: 'left',
   },
+  message: {
+    fontSize: 16,
+  },
   form: {
     justifyContent: 'center',
+    width: '100%',
+    padding: 20,
+    marginTop: 20,
   },
 });
