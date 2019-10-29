@@ -15,13 +15,10 @@ class App extends React.Component {
     const url = `https://robopeterson-api.herokuapp.com/api/messages/${deviceId}`;
     fetch(url)
       .then(res => {
-        console.log('res from getMessages:\n', res);
         if (res.status === 200) {
-          console.log('res.status === 200');
           res
             .json()
             .then(resJSON => {
-              console.log('resJSON from getMessages:\n', resJSON);
               this.setState({
                 messages: resJSON,
               });
@@ -31,7 +28,18 @@ class App extends React.Component {
             });
         } else {
           this.setState({
-            messages: [],
+            messages: [
+              {
+                _id: uuidv4(),
+                createdAt: new Date(),
+                text: 'Well hello there.',
+                user: {
+                  _id: 'robopeterson-95686',
+                  name: 'robopeterson-95686',
+                  avatar: 'https://f4.bcbits.com/img/a2965037780_10.jpg',
+                },
+              },
+            ],
           });
         }
       })
@@ -59,7 +67,9 @@ class App extends React.Component {
             {
               _id: uuidv4(),
               createdAt: new Date(),
-              text: resJSON.message,
+              text: resJSON.video
+                ? `${resJSON.message}\n${resJSON.video}`
+                : resJSON.message,
               image: resJSON.meme ? resJSON.meme.image : '',
               user: {
                 _id: 'robopeterson-95686',
