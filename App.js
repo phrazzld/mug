@@ -2,8 +2,30 @@ import React from 'react';
 import {KeyboardAvoidingView, StyleSheet, Text, View} from 'react-native';
 import Constants from 'expo-constants';
 import {GiftedChat} from 'react-native-gifted-chat';
+import {
+  PROJECT_ID,
+  AGENT_NAME,
+  AGENT_AVATAR_URL,
+  API_BASE_URL,
+} from 'react-native-dotenv';
 
 const uuidv4 = require('uuid/v4');
+
+const formatAgentMessage = resJSON => {
+  return {
+    _id: uuidv4(),
+    createdAt: new Date(),
+    text: resJSON.video
+      ? `${resJSON.message}\n${resJSON.video}`
+      : resJSON.message,
+    image: resJSON.meme ? resJSON.meme.image : '',
+    user: {
+      _id: PROJECT_ID,
+      name: AGENT_NAME,
+      avatar: AGENT_AVATAR_URL,
+    },
+  };
+};
 
 class App extends React.Component {
   state = {
@@ -12,7 +34,7 @@ class App extends React.Component {
 
   componentWillMount() {
     const deviceId = Constants.installationId;
-    const url = `https://robopeterson-api.herokuapp.com/api/messages/${deviceId}`;
+    const url = `${API_BASE_URL}/${deviceId}`;
     fetch(url)
       .then(res => {
         if (res.status === 200) {
@@ -28,18 +50,7 @@ class App extends React.Component {
             });
         } else {
           this.setState({
-            messages: [
-              {
-                _id: uuidv4(),
-                createdAt: new Date(),
-                text: 'Well hello there.',
-                user: {
-                  _id: 'robopeterson-95686',
-                  name: 'robopeterson-95686',
-                  avatar: 'https://f4.bcbits.com/img/a2965037780_10.jpg',
-                },
-              },
-            ],
+            messages: [formatAgentMessage({message: 'Well hello there.'})],
           });
         }
       })
@@ -52,9 +63,8 @@ class App extends React.Component {
     this.setState(previousState => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }));
-    const url = 'https://robopeterson-api.herokuapp.com/api/messages';
     const deviceId = Constants.installationId;
-    fetch(url, {
+    fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,21 +73,7 @@ class App extends React.Component {
     })
       .then(res => {
         res.json().then(resJSON => {
-          const agentMessages = [
-            {
-              _id: uuidv4(),
-              createdAt: new Date(),
-              text: resJSON.video
-                ? `${resJSON.message}\n${resJSON.video}`
-                : resJSON.message,
-              image: resJSON.meme ? resJSON.meme.image : '',
-              user: {
-                _id: 'robopeterson-95686',
-                name: 'robopeterson-95686',
-                avatar: 'https://f4.bcbits.com/img/a2965037780_10.jpg',
-              },
-            },
-          ];
+          const agentMessages = [formatAgentMessage(resJSON)];
           this.setState(previousState => ({
             messages: GiftedChat.append(previousState.messages, agentMessages),
           }));

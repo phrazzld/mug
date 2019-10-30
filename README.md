@@ -1,4 +1,4 @@
-# RoboPeterson
+# Mug
 
 Cross-platform mobile application for talking to chatbots. Built with React Native.
 
